@@ -16,12 +16,14 @@ function LoginForm() {
     const navigate = useNavigate();
 
     const isSessionActive = localStorage.getItem('isSessionActive');
+  
     console.log(isSessionActive)
 
     
     useEffect(() => {
         // redirigir al usuario a la ruta / si no hay una sesión activa
-        if (isSessionActive) {
+        if (isSessionActive == "true") {
+
             navigate('/main');
         }
     }, [isSessionActive, navigate]);
@@ -46,11 +48,11 @@ function LoginForm() {
         if (tabValue === 0) {
           // Iniciar sesión
           data = { user: email, password };
-          url = 'http://localhost:8000/Login';
+          url = 'https://tinderbackend.onrender.com/Login';
         } else {
           // Registrarse
           data = { user: userName, password, name, email, gustos, sex };
-          url = 'http://localhost:8000/Register';
+          url = 'https://tinderbackend.onrender.com/Register';
         }
         try {
             const response = await axios.post(url, data);

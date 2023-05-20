@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import io from 'socket.io-client';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function Main() {
+  const navigate = useNavigate();
   const userData = JSON.parse(localStorage.getItem('userData'));
   let isSessionActive = localStorage.getItem('isSessionActive');
 
@@ -12,20 +14,18 @@ function Main() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentUser = users[currentIndex];
   const [isEditing, setIsEditing] = useState(false);
-  const [newName, setNewName] = useState(userData['name']);
-  const [newGender, setNewGender] = useState(userData['sex']);
-  const [newSexuality, setNewSexuality] = useState(userData['gustos']);
+  const [newName, setNewName] = useState(userData.name);
+  const [newUser, setNewUser] = useState(userData.user);
+  const [newGender, setNewGender] = useState(userData.sex);
+  const [newSexuality, setNewSexuality] = useState(userData.gustos);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [isPasswordChanged, setIsPasswordChanged] = useState(false);
   const [passwordError, setPasswordError] = useState('');
-  // Estado para el modo de edición de imágenes
-  const [isEditingImages, setIsEditingImages] = useState(false);
-  // Estado para el índice de la imagen que se está editando
-  const [editingImageIndex, setEditingImageIndex] = useState(null);
-  // Estado para la imagen seleccionada por el usuario
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [newProfilePicture, setNewProfilePicture] = useState(null);
+
+
 
   const handleDislike = () => {
     setCurrentIndex(currentIndex + 1);
@@ -39,89 +39,97 @@ function Main() {
     setCurrentIndex(currentIndex + 1);
   };
 
+  const handleFileChange = (event) => {
+    const file = event.target.files[0]
+    setNewProfilePicture(file)
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      document.getElementById("imagePreview").src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+  
+
   useEffect(() => {
-    const newSocket = io('http://localhost:8080/');
+    const newSocket = io('https://tinderbackend.onrender.com/');
     setSocket(newSocket);
     return () => newSocket.close();
   }, [setSocket]);
 
   useEffect(() => {
     if (socket) {
-      socket.emit('message', { gender: userData['sex'], sexuality: userData['gustos'] });
+      socket.emit('message', { gender: userData['sex'], sexuality: userData['gustos'], id: userData['id']});
       socket.on('message', (data) => {
         setUsers((prevUsers) => [...prevUsers, ...data]);
       });
     }
   }, [socket]);
 
-// Función para manejar la selección de una imagen por parte del usuario
-const handleSelectImage = (e) => {
-setSelectedImage(e.target.files[0]);
-};
 
-if (!isSessionActive || isSessionActive == null) {
+
+
+if (isSessionActive == "false" || isSessionActive == null) {
 return <Navigate to="/" />;
+}
+
+if (userData.image == null || userData.image == ""){
+  return <Navigate to="/imageUploader" />;
 }
 
 const handleEditInformation = () => {
 setIsEditing(true);
 setPasswordError('');
-setIsEditingImages(false); // Desactivar el modo de edición de imágenes
-setEditingImageIndex(null); // Restablecer el índice de la imagen que se está editando
-setSelectedImage(null); // Restablecer la imagen seleccionada por el usuario
+
+
 };
 
 const handleCancelEdit = () => {
 setIsEditing(false);
-setNewName(userData['name']);
-setNewGender(userData['sex']);
-setNewSexuality(userData['gustos']);
+setNewName(userData.name);
+setNewUser(userData.user);
+setNewGender(userData.sex);
+setNewSexuality(userData.gustos);
 setShowChangePassword(false);
 setOldPassword('');
 setNewPassword('');
 setIsPasswordChanged(false);
 setPasswordError('');
-setIsEditingImages(false); // Desactivar el modo de edición de imágenes
-setEditingImageIndex(null); // Restablecer el índice de la imagen que se está editando
-setSelectedImage(null); // Restablecer la imagen seleccionada por el usuario
+
 };
 
+const handleLogout =  () => {
+  navigate('/');
+  localStorage.removeItem('userData');
+  localStorage.setItem('isSessionActive', false);
+}
+
 const handleSaveChanges = async () => {
-try {
-let updateData = {
-name: newName,
-sex: newGender,
-gustos: newSexuality,
-isPasswordChanged,
-lastPassword: oldPassword,
-newPassword,
-};
-// Si se está editando una imagen específica y se ha seleccionado una nueva imagen
-if (isEditingImages && editingImageIndex !== null && selectedImage) {
-updateData.imageBuffer = true;
-updateData.images = [];
-updateData.images[editingImageIndex] = selectedImage;
-}
-// Si se está agregando una nueva imagen y se ha seleccionado una nueva imagen
-if (isEditingImages && editingImageIndex === null && selectedImage) {
-updateData.imageBuffer = true;
-updateData.images = [];
-updateData.images.push(selectedImage);
-}
-const response = await axios.put(`http://localhost:8000/update/${userData.id}`, updateData);
-setIsEditing(false);
-setShowChangePassword(false);
-setOldPassword('');
-setNewPassword('');
-setIsPasswordChanged(false);
-setPasswordError('');
-localStorage.setItem('userData', JSON.stringify(response.data.data));
-setNewName(response.data.data.name);
-setNewGender(response.data.data.sex);
-setNewSexuality(response.data.data.gustos);
-setIsEditingImages(false); // Desactivar el modo de edición de imágenes
-setEditingImageIndex(null); // Restablecer el índice de la imagen que se está editando
-setSelectedImage(null); // Restablecer la imagen seleccionada por el usuario
+  console.log(userData['image'])
+  try {
+    let updateData = new FormData();
+    updateData.append('name', newName);
+    updateData.append('user',newUser);
+    updateData.append('sex', newGender);
+    updateData.append('gustos', newSexuality);
+    updateData.append('isPasswordChanged', isPasswordChanged);
+    updateData.append('lastPassword', oldPassword);
+    updateData.append('newPassword', newPassword);
+    if (newProfilePicture) {
+      updateData.append('isNewPicture',true);
+      updateData.append('profilePicture', newProfilePicture);
+    }
+    const response = await axios.put(
+      `https://tinderbackend.onrender.com/update/${userData.id}`,
+      updateData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    localStorage.setItem('userData', JSON.stringify(response.data.data));
+
 } catch (err) {
 if (err.response && err.response.status === 400) {
 setPasswordError('La contraseña anterior no coincide');
@@ -129,6 +137,7 @@ setPasswordError('La contraseña anterior no coincide');
 console.error(err);
 }
 }
+setIsEditing(false);
 };
 
 return (  <div>
@@ -152,14 +161,23 @@ return (  <div>
         onChange={(e) => setNewName(e.target.value)}
       />
     </p>
+
+    <p>
+      User:{' '}
+      <input
+        type="text"
+        value={newUser}
+        onChange={(e) => setNewUser(e.target.value)}
+      />
+    </p>
     <p>
       Género:{' '}
       <select
         value={newGender}
         onChange={(e) => setNewGender(e.target.value)}
       >
-        <option value="Hombre">Masculino</option>
-        <option value="Mujer">Femenino</option>
+        <option value="Masculino">Masculino</option>
+        <option value="Femenino">Femenino</option>
         <option value="Otro">Indefinido</option>
       </select>
     </p>
@@ -170,21 +188,25 @@ return (  <div>
         onChange={(e) => setNewSexuality(e.target.value)}
       >
         <option value="Heterosexual">Heterosexual</option>
-        <option value="Homosexual">Homosexual</option>
+        <option value="Gay">Gay</option>
         <option value="Bisexual">Bisexual</option>
         <option value="Otro">Otro</option>
       </select>
     </p>
+
+    <p>
+      Profile Picture:{' '}
+      <input type="file" onChange={handleFileChange} />
+    </p>
+<div style={{display:'flex', alignItems: 'center', marginLeft:'80px', marginBottom:'40px'}}>
+    <img id="imagePreview" width="150" height="150" />
+    </div>
     {!showChangePassword && (
       <button onClick={() => setShowChangePassword(true)}>
         Editar contraseña
       </button>
     )}
-    {isEditing && (
-  <button onClick={() => setIsEditingImages(true)}>
-    Editar imágenes
-  </button>
-)}
+
 
     {showChangePassword && (
       <>
@@ -212,96 +234,28 @@ return (  <div>
         </p>
       </>
     )}
-    {isEditingImages && (
-      <>
-        {userData['images']?.length >= 5 ? (
-          <select
-            onChange={(e) =>
-              setEditingImageIndex(parseInt(e.target.value))
-            }
-          >
-            <option value={null}>
-              Selecciona una imagen para editar
-            </option>{' '}
-            {userData['images']?.map((image, index) => (
-              <option key={index} value={index}>
-                Imagen {index + 1}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <>
-            <label htmlFor="imageInput">Agregar imagen:</label>{' '}
-            <input
-              type="file"
-              id="imageInput"
-              onChange={handleSelectImage}
-            />{' '}
-            
-            <button onClick={() => setIsEditingImages(false)}>
-              Cancelar
-            </button>{' '}
-            <button
-              onClick={() => {
-                setSelectedImage(null);
-                setEditingImageIndex(null);
-              }}
-            >
-              Editar Imagen Especifica{' '}
-            </button>{' '}
-          </>
-        )}
-        {editingImageIndex !== null && (
-          <>
-            <label htmlFor="imageInput">
-              Selecciona una nueva imagen:
-            </label>{' '}
-            <input
-              type="file"
-              id="imageInput"
-              onChange={handleSelectImage}
-            />{' '}
-         
-            <button
-              onClick={() => {
-                setIsEditingImages(false);
-                setSelectedImage(null);
-                setEditingImageIndex(null);
-              }}
-            >
-              Cancelar
-            </button>{' '}
-          </>
-        )}
-      </>
-    )}
+  
    
 
    <>
+ 
       <button onClick={handleSaveChanges}>Guardar cambios</button>{' '}
       <button onClick={handleCancelEdit}>Cancelar</button>{' '}
+
     </>
     </div>
     ) : (
       <>
         <p>Nombre: {newName}</p>{' '}
+        <p>User: {newUser}</p>{' '}
         <p>Género: {newGender}</p>{' '}
         <p>Sexualidad: {newSexuality}</p>{' '}
-        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-          {userData['images']?.map((image, index) => (
-            <img
-              key={index}
-              src={image}
-              alt={`Imagen ${index + 1}`}
-              style={{
-                width: '50px',
-                height: '50px',
-                marginRight: '10px',
-              }}
-            />
-          ))}
-        </div>{' '}
+        <img
+         style={{height:'250px', width: '250px', borderRadius: '50px' }}
+              src= {userData['image']}/>
+       
         <button onClick={handleEditInformation}>Editar información</button>{' '}
+        <button onClick={handleLogout} >Cerrar Sesion</button>{' '}
       </>
     )}
   </div>
