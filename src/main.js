@@ -275,9 +275,9 @@ return (  <div>
             <p>{currentUser['name']}</p>
             <p>{currentUser['sex']}</p>
             <img
-              src={currentUser['image']}
+              src={currentUser['profilePicture']}
               alt="Imagen"
-              style={{ width: '100%', borderRadius: '50px' }}
+              style={{ width: '550px', height: '400px', borderRadius: '50px' }}
             />
             <button onClick={() => handleDislike()}>DisLike</button>
             <button onClick={() => handleLike()}>Like</button>
