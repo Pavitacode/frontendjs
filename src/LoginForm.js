@@ -99,8 +99,8 @@ function LoginForm() {
         };
  return (
  <ThemeProvider theme={theme}>
- <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
- <div style={{ width: '600px', height: '600px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)', background: 'linear-gradient(to bottom right, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%)' }}>
+ <div style={{ background:'#a5cbd8',display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+ <div style={{ borderRadius:'15px', width: '600px', height: '600px', boxShadow: '25px 25px 10px rgba(0, 0, 0, 0.3)', background: '#e8f3f7' }}>
  <Tabs value={tabValue} onChange={(event, newValue) => setTabValue(newValue)} centered>
  <Tab label="Iniciar sesión" />
  <Tab label="Registrarse" />
@@ -113,7 +113,7 @@ function LoginForm() {
  value={email}
  onChange={(event) => setEmail(event.target.value)}
  required
- style={{ margin: '8px 0' }}
+ style={{ margin: '8px 0',background:'white', color:'black', borderRadius:'5px' }}
  variant="outlined"
  error = {userLoginError.error}
  helperText={userLoginError.error && userLoginError.message}
@@ -124,13 +124,13 @@ function LoginForm() {
  value={password}
  onChange={(event) => setPassword(event.target.value)}
  required
- style={{ margin: '8px 0' }}
+ style={{ margin: '8px 0',background:'white', color:'black', borderRadius:'5px' }}
  variant="outlined"
  error = {passwordError.error}
  helperText={passwordError.error && passwordError.message}
 
  />
- <Button type="submit" variant="contained" color="primary" style={{ margin: '8px 0' }}>Iniciar sesión</Button>
+ <Button type="submit" variant="contained" color="primary" style={{ margin: '8px 0', background:'white', color:'black' }}>Iniciar sesión</Button>
  </form>
  )}
  {tabValue === 1 && (
@@ -141,7 +141,7 @@ function LoginForm() {
     value={email}
     onChange={(event) => setEmail(event.target.value)}
     required
-    style={{ margin: '8px 0' }}
+    style={{ margin: '8px 0',background:'white', color:'black', borderRadius:'5px' }}
     variant="outlined"
     error ={emailError.error}
     helperText={emailError.error && emailError.message}
@@ -152,7 +152,7 @@ function LoginForm() {
     value={password}
     onChange={(event) => setPassword(event.target.value)}
     required
-    style={{ margin: '8px 0' }}
+    style={{ margin: '8px 0',background:'white', color:'black', borderRadius:'5px' }}
     variant="outlined"
   />
   <TextField
@@ -160,7 +160,7 @@ function LoginForm() {
     value={userName}
     onChange={(event) => setUserName(event.target.value)}
     required
-    style={{ margin: '8px 0' }}
+    style={{ margin: '8px 0',background:'white', color:'black', borderRadius:'5px' }}
     variant="outlined"
     error ={userNameError.error}
     helperText={userNameError.error && userNameError.message}
@@ -170,7 +170,7 @@ function LoginForm() {
     value={name}
     onChange={(event) => setName(event.target.value)}
     required
-    style={{ margin: '8px 0' }}
+    style={{ margin: '8px 0',background:'white', color:'black', borderRadius:'5px' }}
     variant="outlined"
   />
   <Select
@@ -179,7 +179,7 @@ function LoginForm() {
       value={gustos}
       onChange={(event) => setGustos(event.target.value)}
       required
-      style={{ margin: '8px 0' }}
+      style={{ margin: '8px 0',background:'white', color:'black', borderRadius:'5px' }}
       variant="outlined"
   >
       <MenuItem value={"Heterosexual"}>Heterosexual</MenuItem>
@@ -193,14 +193,14 @@ function LoginForm() {
                   value={sex}
                   onChange={(event) => setSex(event.target.value)}
                   required
-                  style={{ margin: '8px 0' }}
+                  style={{ margin: '8px 0',background:'white', color:'black', borderRadius:'5px' }}
                   variant="outlined"
                   >
       <MenuItem value={"Masculino"}>Masculino</MenuItem>
       <MenuItem value={"Femenino"}>Femenino</MenuItem>
       <MenuItem value={"Indefinido"}>Indefinido</MenuItem>
  
-</Select>    <Button type="submit" variant="contained" color="primary" style={{ margin: '8px 0' }}>Register</Button>
+</Select>    <Button type="submit" variant="contained" color="primary" style={{ margin: '8px 0',background:'white', color:'black', borderRadius:'5px' }}>Register</Button>
 </form>
  )}
  </div>
