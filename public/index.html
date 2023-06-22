@@ -26,8 +26,133 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>React App</title>
+
+    <style>
+
+.edit-button,
+.logout-button {
+  background-color: white;
+  border: none;
+  color: black;
+  outline: none;
+  padding: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  width: 50px;
+  height: 50px;
+  box-shadow: 0px 9px #999;
+}
+
+.edit-button:hover {
+  color: white;
+  background-color: rgb(22, 199, 22);
+  box-shadow: 0px 5px #666;
+  transform: translateY(4px);
+}
+
+.logout-button:hover {
+  color: white;
+  background-color: red;
+  box-shadow: 0px 5px #666;
+  transform: translateY(4px);
+}
+
+
+
+
+
+
+
+.like-button{
+  background: black;
+
+}
+
+
+.dislike-button{
+  background: black;
+ 
+}
+
+
+.user-info {
+  position: relative;
+  background-color: #f8f8f8;
+  box-shadow: 0px 9px 18px #999;
+  padding: 10px;
+}
+
+.gender-icon {
+  font-size: 50px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.gender-female .gender-icon {
+  color: pink;
+}
+
+.gender-male .gender-icon {
+  color: blue;
+}
+
+.gender-undefined .gender-icon {
+  color: gray;
+}
+
+
+
+.like-button, .dislike-button {
+  position: relative;
+  border: none;
+  outline: none;
+  padding: 12px 20px;
+  border-radius: 5px;
+  box-shadow: 0px 9px #999;
+}
+
+.like-button:hover {
+  background-color: blue;
+  cursor: pointer;
+  box-shadow: 0px 5px #666;
+  transform: translateY(4px);
+}
+
+.dislike-button:hover {
+  background-color: red;
+  cursor: pointer;
+  box-shadow: 0px 5px #666;
+  transform: translateY(4px);
+}
+
+
+
+          .like-button:hover {
+      background: blue;
+      cursor: pointer;
+    }
+
+    .dislike-button:hover {
+      background: red;
+      cursor: pointer;
+    }
+
+    .user-card {
+      transition: transform 1s;
+    }
+
+    .user-card.like {
+      transform: translateX(1000px) rotate(30deg);
+    }
+
+    .user-card.dislike {
+      transform: translateX(-1000px) rotate(-30deg);
+    }
+    </style>
   </head>
   <body>
+
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <!--
